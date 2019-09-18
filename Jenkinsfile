@@ -64,7 +64,7 @@ pipeline {
                     [ -d venv ] && rm -rf venv
                     python3.6 -m venv venv
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
-		                pip install --upgrade pip
+		    pip install --upgrade pip
                     pip install -r requirements.txt
                 """
             }
@@ -73,26 +73,28 @@ pipeline {
         stage('flake8') {
             steps {
                 sh """
-		               #. venv/bin/activate
-		               export PATH=${VIRTUAL_ENV}/bin:${PATH}
-		               flake8 --exclude=venv* --statistics  --exit-zero . | tee flake8.log || true
-		               """
+		#. venv/bin/activate
+		export PATH=${VIRTUAL_ENV}/bin:${PATH}
+		flake8 --exclude=venv* --statistics  --exit-zero . | tee flake8.log || true
+		"""
             }
         }
         
         stage('Pylint') {
             steps {
                 sh """
-		               export PATH=${VIRTUAL_ENV}/bin:${PATH}
-		               pylint ${WORKSPACE}/src --disable=C irisvmpy | tee pylint.log || true
-		               """
+		export PATH=${VIRTUAL_ENV}/bin:${PATH}
+		pylint ${WORKSPACE}/src --disable=C irisvmpy | tee pylint.log || true
+		"""
             }
         }
 
         stage('Unit tests') {
             steps {
                 sh """
-   		             py.test -svv --cov=src/ --cov-report=term-missing | tee pytest.log || true
+		export PATH=${VIRTUAL_ENV}/bin:${PATH}
+		pytest ${WORKSPACE}/src/ 
+		py.test -svv --cov=src/ --cov-report=term-missing | tee pytest.log || true
                 """
             }
         }
